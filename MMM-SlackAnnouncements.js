@@ -29,7 +29,8 @@ Module.register("MMM-SlackAnnouncements", {
         if (this.status === 200) {
           var parsedResponse = JSON.parse(this.response);
           var message = parsedResponse.messages[0].text;
-          self.processMessage(message);
+          var userid =  parsedResponse.messages[0].user;
+          self.processMessage(message, userid);
         } else if (this.status === 401) {
           self.updateDom(self.config.animationSpeed);
         }
@@ -39,8 +40,9 @@ Module.register("MMM-SlackAnnouncements", {
     slackMessageRequest.send();
   },
 
-  processMessage: function(message) {
+  processMessage: function(message, userid) {
     this.message = message;
+    this.userid = userid
     this.updateDom();
   },
 
@@ -53,11 +55,13 @@ Module.register("MMM-SlackAnnouncements", {
 
   getDom: function() {
     var wrapper = document.createElement("div");
+    wrapper.class = "small"
     var displayText = this.message == undefined ? "Loading..." : this.message;
+    var displayUser = this.userid == undefined ? "Loading..." : this.userid;
 
     wrapper.innerHTML = `
-            <h1> ${this.config.title} </h1>
-            ${displayText}
+            <p>${displayText}</p>
+            <h6>${displayUser}</h6>
         `;
 
     return wrapper;
