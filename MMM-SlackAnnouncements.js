@@ -10,7 +10,6 @@
 Module.register("MMM-SlackAnnouncements", {
   // Configuration
   defaults: {
-    title: "Announcements",
     channel: "",
     slackToken: "",
     updateMs: 3000 // in ms
@@ -78,7 +77,7 @@ Module.register("MMM-SlackAnnouncements", {
     var self = this;
     setInterval(function() {
       self.getChannelMessages();
-      if ( typeof self.userid !== 'undefined') {
+      if ( self.userid !== 'undefined') {
         self.getUserInfo();
       }
     }, this.config.updateMs);
