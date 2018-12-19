@@ -91,8 +91,8 @@ Module.register("MMM-SlackAnnouncements", {
     var displayUser = this.userRealName == undefined ? "Loading..." : this.userRealName;
 
     wrapper.innerHTML = `
-            <p>${displayText}</p>
-            <h6>${displayUser}</h6>
+            <div class="medium bright">${displayText}</div>
+            <div class="small light">${displayUser}</div>
         `;
 
     return wrapper;
