@@ -40,9 +40,37 @@ Module.register("MMM-SlackAnnouncements", {
     slackMessageRequest.send();
   },
 
+  getUserInfo: function() {
+    var url = `https://slack.com/api/users.info?token=${
+      this.config.slackToken
+    }&user=${this.userid}`;
+    var self = this;
+    var slackMessageRequest = new XMLHttpRequest();
+
+    slackMessageRequest.open("GET", url, true);
+    slackMessageRequest.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        if (this.status === 200) {
+          var parsedResponse = JSON.parse(this.response);
+          var userRealName =  parsedResponse.user["real_name"];
+          self.processUserInfo(userRealName);
+        } else if (this.status === 401) {
+          self.updateDom(self.config.animationSpeed);
+        }
+      }
+    };
+
+    slackMessageRequest.send();
+  },
+
   processMessage: function(message, userid) {
     this.message = message;
-    this.userid = userid
+    this.userid = userid;
+    this.updateDom();
+  },
+
+  processUserInfo: function(userRealName) {
+    this.userRealName = userRealName;
     this.updateDom();
   },
 
@@ -50,6 +78,9 @@ Module.register("MMM-SlackAnnouncements", {
     var self = this;
     setInterval(function() {
       self.getChannelMessages();
+      if ( typeof self.userid !== 'undefined') {
+        self.getUserInfo();
+      }
     }, this.config.updateMs);
   },
 
@@ -57,7 +88,7 @@ Module.register("MMM-SlackAnnouncements", {
     var wrapper = document.createElement("div");
     wrapper.class = "small"
     var displayText = this.message == undefined ? "Loading..." : this.message;
-    var displayUser = this.userid == undefined ? "Loading..." : this.userid;
+    var displayUser = this.userRealName == undefined ? "Loading..." : this.userRealName;
 
     wrapper.innerHTML = `
             <p>${displayText}</p>
